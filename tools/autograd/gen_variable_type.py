@@ -1609,16 +1609,16 @@ def emit_body(
                                 tensor_name=aliased_arg_name, out_tensor_name=ret_name
                             )
                         ]
-                    else:
-                        if (
-                            type_wrapper_name(f)
-                            not in DONT_ENFORCE_STORAGE_IMPL_USE_COUNT
-                        ):
-                            stmts_after_call += [
-                                ENFORCE_TENSOR_STORAGE_USE_COUNT_EQUALS_ONE.substitute(
-                                    tensor_name=ret_name, fn_name=type_wrapper_name(f)
-                                )
-                            ]
+                    # else:
+                        # if (
+                        #     type_wrapper_name(f)
+                        #     not in DONT_ENFORCE_STORAGE_IMPL_USE_COUNT
+                        # ):
+                        #     stmts_after_call += [
+                        #         ENFORCE_TENSOR_STORAGE_USE_COUNT_EQUALS_ONE.substitute(
+                        #             tensor_name=ret_name, fn_name=type_wrapper_name(f)
+                        #         )
+                        #     ]
 
                     if type_wrapper_name(f) not in DONT_ENFORCE_TENSOR_IMPL_USE_COUNT:
                         stmts_after_call += [
