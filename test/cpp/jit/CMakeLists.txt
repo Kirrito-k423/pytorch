@@ -7,6 +7,7 @@ add_library(torchbind_test SHARED
   ${JIT_TEST_ROOT}/test_custom_class_registrations.cpp
 )
 target_link_libraries(torchbind_test torch)
+target_link_libraries(torchbind_test cpprinter)
 
 add_library(jitbackend_test SHARED ${JIT_TEST_ROOT}/test_backend_lib.cpp)
 target_link_libraries(jitbackend_test torch)

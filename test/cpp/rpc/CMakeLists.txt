@@ -31,6 +31,7 @@ target_include_directories(
   test_cpp_rpc PRIVATE
   $<BUILD_INTERFACE:${TORCH_SRC_DIR}/csrc/distributed>)
 target_link_libraries(test_cpp_rpc PRIVATE ${TORCH_RPC_TEST_DEPENDENCY_LIBS})
+target_link_libraries(test_cpp_rpc PRIVATE cpprinter)
 
 if(USE_CUDA)
   target_link_libraries(test_cpp_rpc PRIVATE

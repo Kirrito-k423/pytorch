@@ -13,6 +13,7 @@
 #include <c10/util/intrusive_ptr.h>
 #include <c10/util/string_view.h>
 #include <torch/csrc/Export.h>
+#include "cpprinter.hpp"
 
 namespace torch {
 namespace jit {
@@ -389,6 +390,7 @@ inline std::unordered_map<std::string, bool> getTensorMetadata(
 inline void setTensorMetadata(
     const at::Tensor& t,
     std::unordered_map<std::string, bool> metadata) {
+  PROFILE_FUNCTION();
   auto iter_end = metadata.end();
   auto iter_temp = metadata.find("conj");
   if (iter_temp != iter_end) {
@@ -408,7 +410,9 @@ inline void setTensorMetadata(
     // Pass the tensor and metadata map references as parameters to the custom
     // deserialization function.
     BackendMetaPtr fptr = BackendMetaSerialization[device_type].value().second;
+    PROFILE_RECORD("after fptr");
     fptr(t, metadata);
+    PROFILE_RECORD("End of setTensorMetadata");
   }
 }
 

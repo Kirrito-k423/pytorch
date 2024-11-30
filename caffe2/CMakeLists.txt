@@ -914,6 +914,19 @@ if(HAVE_SOVERSION)
       VERSION ${TORCH_VERSION} SOVERSION ${TORCH_SOVERSION})
 endif()
 
+set(CPPRINTER_USE_CXX11_ABI 0 CACHE STRING "Set to 1 to enable CXX11 ABI")
+
+include(FetchContent)
+FetchContent_Declare(
+  cpp_printer # match project name
+  GIT_REPOSITORY https://github.com/Kirrito-k423/cpp-printer.git
+  GIT_TAG        v1.2.17
+)
+FetchContent_MakeAvailable(cpp_printer) # match project name
+
+target_link_libraries(torch PRIVATE cpprinter)
+target_link_libraries(torch_cpu PRIVATE cpprinter)
+
 if(USE_ROCM)
   filter_list(__caffe2_hip_srcs_cpp Caffe2_HIP_SRCS "\\.(cu|hip)$")
   set_source_files_properties(${__caffe2_hip_srcs_cpp} PROPERTIES HIP_SOURCE_PROPERTY_FORMAT 1)
@@ -1482,6 +1495,7 @@ if(USE_CUDA)
 elseif(USE_ROCM)
   install(TARGETS torch_hip torch_hip_library EXPORT Caffe2Targets DESTINATION "${TORCH_INSTALL_LIB_DIR}")
 endif()
+install(TARGETS cpprinter EXPORT Caffe2Targets DESTINATION "${TORCH_INSTALL_LIB_DIR}")
 install(TARGETS torch torch_library EXPORT Caffe2Targets DESTINATION "${TORCH_INSTALL_LIB_DIR}")
 
 target_link_libraries(torch PUBLIC torch_cpu_library)
@@ -1691,6 +1705,7 @@ if(BUILD_TEST)
     get_filename_component(test_name ${test_src} NAME_WE)
     add_executable(${test_name} "${test_src}")
     target_link_libraries(${test_name} torch_library gtest_main)
+    target_link_libraries(${test_name} cpprinter)
     target_include_directories(${test_name} PRIVATE $<INSTALL_INTERFACE:include>)
     target_include_directories(${test_name} PRIVATE $<BUILD_INTERFACE:${CMAKE_BINARY_DIR}/include>)
     target_include_directories(${test_name} PRIVATE ${Caffe2_CPU_INCLUDE})
