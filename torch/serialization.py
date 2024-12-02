@@ -20,6 +20,7 @@ import copyreg
 import pickle
 import pathlib
 import torch._weights_only_unpickler as _weights_only_unpickler
+from icecream import ic
 
 DEFAULT_PROTOCOL = 2
 
@@ -1419,12 +1420,16 @@ def _load(zip_file, map_location, pickle_module, pickle_file='data.pkl', overall
 
     unpickler = UnpicklerWrapper(data_file, **pickle_load_args)
     unpickler.persistent_load = persistent_load
+    ic()
     result = unpickler.load()
+    print("After unpickler", flush=True)
 
     torch._utils._validate_loaded_sparse_tensors()
+    print("After _validate_loaded_sparse_tensors", flush=True)
     torch._C._log_api_usage_metadata(
         "torch.load.metadata", {"serialization_id": zip_file.serialization_id()}
     )
+    print("End of _load", flush=True)
     return result
 
 

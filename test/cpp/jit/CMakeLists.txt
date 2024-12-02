@@ -109,6 +109,8 @@ endif()
 
 target_link_libraries(
   test_jit PRIVATE flatbuffers)
+target_link_libraries(
+  test_jit PRIVATE cpprinter)
 
 
 # TODO temporary until we can delete the old gtest polyfills.

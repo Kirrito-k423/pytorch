@@ -7,6 +7,24 @@ from collections import defaultdict
 from typing import Any, DefaultDict, List, Optional
 
 import torch
+import datetime
+import inspect
+from icecream import ic
+
+def ic_with_timestamp(*args):
+    # Get the current frame's information
+    frame = inspect.currentframe().f_back  # Get the caller's frame
+    filename = frame.f_code.co_filename  # File where the function is called
+    lineno = frame.f_lineno  # Line number where the function is called
+
+    timestamp = datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+
+    # Format the output to include timestamp, file, and line number
+    return '\n\n%s %s:%d shaojieLog >| ' % (timestamp, filename, lineno)
+
+# Configure icecream to use this custom output function
+ic.configureOutput(prefix=ic_with_timestamp)
+
 
 
 def _type(self, dtype=None, non_blocking=False, **kwargs):
@@ -193,7 +211,9 @@ def set_tensor_metadata(tensor, metadata):
     # See `get_tensor_metadata` above
     assert isinstance(metadata, dict)
     assert isinstance(tensor, torch.Tensor)
+    ic()
     torch._C._set_tensor_metadata(tensor, metadata)  # type: ignore[attr-defined]
+    print("End of set_tensor_metadata", flush=True)
 
 
 def _rebuild_tensor_v2(
@@ -208,6 +228,7 @@ def _rebuild_tensor_v2(
     # general expectation is that backward_hooks is an empty
     # OrderedDict.  See Note [Don't serialize hooks]
     tensor._backward_hooks = backward_hooks
+    print("End of _rebuild_tensor_v2", flush=True)
     return tensor
 
 
@@ -227,7 +248,10 @@ _sparse_tensors_to_validate: List["torch.Tensor"] = []
 def _validate_loaded_sparse_tensors():
     try:
         for t in _sparse_tensors_to_validate:
+            ic()
+            print("In for _validate_loaded_sparse_tensors", flush=True)
             if t.layout is torch.sparse_coo:
+                ic()
                 torch._validate_sparse_coo_tensor_args(
                     t._indices(), t._values(), t.size(), t.is_coalesced()
                 )
@@ -237,6 +261,7 @@ def _validate_loaded_sparse_tensors():
                 torch.sparse_bsr,
                 torch.sparse_bsc,
             }:
+                ic()
                 # TODO: Validation currently involves an expensive traversal
                 # on CPU, which may include a device transfer.
                 if t.layout in {torch.sparse_csr, torch.sparse_bsr}:
@@ -252,12 +277,17 @@ def _validate_loaded_sparse_tensors():
                 torch._validate_sparse_compressed_tensor_args(
                     compressed_indices, plain_indices, t.values(), t.size(), t.layout
                 )
+                ic()
             else:
+                ic()
                 raise NotImplementedError(
                     f"_validate_loaded_sparse_tensors for layout `{t.layout}`"
                 )
+            ic()
+        ic()
 
     finally:
+        ic()
         _sparse_tensors_to_validate.clear()
 
 
